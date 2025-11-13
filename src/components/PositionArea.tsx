@@ -98,7 +98,7 @@ export function PositionArea({
 				aria-valuemax={100}
 				aria-valuenow={displayValue}
 				tabIndex={0}
-				className="relative h-32 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+				className="relative h-32 w-full rounded-lg bg-teal-50 dark:bg-teal-950 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
 				onPointerDown={handlePointerDown}
 				onPointerMove={handlePointerMove}
 				onPointerUp={handlePointerUp}
@@ -120,7 +120,7 @@ export function PositionArea({
 
 				{/* 選択位置マーカー */}
 				<div
-					className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-blue-500 border-4 border-white dark:border-zinc-900 shadow-lg transition-all"
+					className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-teal-500 border-4 border-white dark:border-teal-900 shadow-lg transition-all"
 					style={{ left: `${displayValue}%` }}
 					aria-hidden="true"
 				/>
