@@ -30,10 +30,31 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
     setPosition(newPosition)
   }
 
-  const handleFinalize = () => {
+  const handleFinalize = async () => {
+    // Save to localStorage
     saveResponse(question.id, position)
     setResponseFinalized(question.id, true)
     setIsFinalized(true)
+
+    // Save to database
+    try {
+      const response = await fetch("/api/responses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          questionId: question.id,
+          value: position,
+        }),
+      })
+
+      if (!response.ok) {
+        console.error("Failed to save response to database")
+      }
+    } catch (error) {
+      console.error("Error saving response to database:", error)
+    }
   }
 
   if (!mounted) {
