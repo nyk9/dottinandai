@@ -1,13 +1,16 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface PositionAreaProps {
-	value: number | null;
+	position: number | null;
 	onChange: (value: number) => void;
 	leftLabel: string;
 	rightLabel: string;
 	ticks?: number[];
+	isFinalized?: boolean;
+	onFinalize?: () => void;
 }
 
 const clamp = (value: number, min: number, max: number): number => {
@@ -15,11 +18,13 @@ const clamp = (value: number, min: number, max: number): number => {
 };
 
 export function PositionArea({
-	value,
+	position,
 	onChange,
 	leftLabel,
 	rightLabel,
 	ticks = [0, 25, 50, 75, 100],
+	isFinalized = false,
+	onFinalize,
 }: PositionAreaProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [isDragging, setIsDragging] = useState(false);
@@ -34,6 +39,7 @@ export function PositionArea({
 	}, []);
 
 	const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+		if (isFinalized) return;
 		e.preventDefault();
 		setIsDragging(true);
 		const newValue = calculateValueFromPosition(e.clientX);
@@ -52,7 +58,8 @@ export function PositionArea({
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-		const currentValue = value ?? 50;
+		if (isFinalized) return;
+		const currentValue = position ?? 50;
 		let newValue = currentValue;
 
 		switch (e.key) {
@@ -79,7 +86,7 @@ export function PositionArea({
 		onChange(clamp(newValue, 0, 100));
 	};
 
-	const displayValue = value ?? 50;
+	const displayValue = position ?? 50;
 
 	return (
 		<div className="w-full space-y-6">
@@ -97,8 +104,10 @@ export function PositionArea({
 				aria-valuemin={0}
 				aria-valuemax={100}
 				aria-valuenow={displayValue}
-				tabIndex={0}
-				className="relative h-32 w-full rounded-lg bg-teal-50 dark:bg-teal-950 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+				tabIndex={isFinalized ? -1 : 0}
+				className={`relative h-32 w-full rounded-lg bg-teal-50 dark:bg-teal-950 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 ${
+					isFinalized ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+				}`}
 				onPointerDown={handlePointerDown}
 				onPointerMove={handlePointerMove}
 				onPointerUp={handlePointerUp}
@@ -142,6 +151,23 @@ export function PositionArea({
 					/ 100
 				</p>
 			</div>
+
+			{/* 決定ボタン */}
+			{!isFinalized && onFinalize && (
+				<div className="flex justify-center">
+					<Button onClick={onFinalize} size="lg">
+						決定
+					</Button>
+				</div>
+			)}
+
+			{isFinalized && (
+				<div className="text-center">
+					<p className="text-sm font-medium text-teal-600 dark:text-teal-400">
+						回答を送信しました
+					</p>
+				</div>
+			)}
 		</div>
 	);
 }
