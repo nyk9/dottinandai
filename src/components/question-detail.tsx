@@ -17,6 +17,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
   const [position, setPosition] = useState(50)
   const [mounted, setMounted] = useState(false)
   const [isFinalized, setIsFinalized] = useState(false)
+  const [statsKey, setStatsKey] = useState(0)
 
   useEffect(() => {
     console.log("=== QuestionDetail mounted ===")
@@ -40,14 +41,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
     console.log("Question ID:", question.id)
     console.log("Position:", position)
 
-    alert("handleFinalize関数が呼ばれました！コンソールを確認してください。")
-
-    // Save to localStorage
-    saveResponse(question.id, position)
-    setResponseFinalized(question.id, true)
-    setIsFinalized(true)
-
-    // Save to database
+    // Save to database first
     try {
       console.log("Sending POST request to /api/responses", {
         questionId: question.id,
@@ -76,7 +70,13 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
 
       const result = await response.json()
       console.log("Successfully saved to database:", result)
-      alert("データベースへの保存に成功しました！")
+
+      // Only after successful POST, save to localStorage and show stats
+      saveResponse(question.id, position)
+      setResponseFinalized(question.id, true)
+      setIsFinalized(true)
+      // Force stats component to remount and fetch fresh data
+      setStatsKey(prev => prev + 1)
     } catch (error) {
       console.error("Error saving response to database:", error)
       alert(`エラーが発生しました: ${error instanceof Error ? error.message : '不明なエラー'}`)
@@ -123,7 +123,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
 
         {isFinalized && (
           <div className="pt-8">
-            <QuestionStatsComponent questionId={question.id} />
+            <QuestionStatsComponent key={statsKey} questionId={question.id} />
           </div>
         )}
       </div>
