@@ -159,6 +159,48 @@ src/
 - `npm run lint` - Run Biome linter
 - `npm run lint:fix` - Fix linting issues
 - `npm run format` - Format code with Biome
+- `npm run db:push` - Push database schema to Neon DB
+- `npm run db:studio` - Open Drizzle Studio to view database
+
+## Troubleshooting
+
+### Statistics not showing after submitting response
+
+1. **Check browser console for errors**
+   - Open Developer Tools (F12)
+   - Look for error messages in Console tab
+   - Check Network tab for failed API requests
+
+2. **Verify DATABASE_URL is set**
+   ```bash
+   # Make sure .env.local exists with DATABASE_URL
+   cat .env.local
+   ```
+
+3. **Verify database tables are created**
+   ```bash
+   # Push schema to database
+   npm run db:push
+   ```
+
+4. **Check if data is being saved**
+   ```bash
+   # Open Drizzle Studio to view database
+   npm run db:studio
+   ```
+
+5. **Common error messages:**
+   - "Database is not configured" → Set DATABASE_URL in .env.local
+   - "Database table does not exist" → Run `npm run db:push`
+   - "No statistics found" → Submit at least one response first
+
+### Development workflow
+
+1. Make changes to code
+2. Browser auto-reloads
+3. Test in browser
+4. Check console for errors
+5. If database errors, run `npm run db:push`
 
 ## Deploy on Vercel
 

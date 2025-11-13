@@ -39,6 +39,11 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
 
     // Save to database
     try {
+      console.log("Sending POST request to /api/responses", {
+        questionId: question.id,
+        value: position,
+      })
+
       const response = await fetch("/api/responses", {
         method: "POST",
         headers: {
@@ -50,11 +55,20 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
         }),
       })
 
+      console.log("POST response status:", response.status)
+
       if (!response.ok) {
-        console.error("Failed to save response to database")
+        const errorData = await response.json().catch(() => ({}))
+        console.error("Failed to save response to database:", response.status, errorData)
+        alert(`データベースへの保存に失敗しました: ${errorData.error || response.statusText}`)
+        return
       }
+
+      const result = await response.json()
+      console.log("Successfully saved to database:", result)
     } catch (error) {
       console.error("Error saving response to database:", error)
+      alert(`エラーが発生しました: ${error instanceof Error ? error.message : '不明なエラー'}`)
     }
   }
 

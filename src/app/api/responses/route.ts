@@ -4,8 +4,19 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
 	try {
+		// Check if DATABASE_URL is set
+		if (!process.env.DATABASE_URL) {
+			console.error("DATABASE_URL is not set");
+			return NextResponse.json(
+				{ error: "Database is not configured. Please set DATABASE_URL environment variable." },
+				{ status: 500 },
+			);
+		}
+
 		const body = await request.json();
 		const { questionId, value, sessionId } = body;
+
+		console.log("POST /api/responses - Request:", { questionId, value, sessionId });
 
 		// Validation
 		if (!questionId || typeof questionId !== "string") {
@@ -36,14 +47,26 @@ export async function POST(request: Request) {
 			})
 			.returning({ id: responses.id });
 
+		console.log("POST /api/responses - Success:", result);
+
 		return NextResponse.json({
 			success: true,
 			id: result.id,
 		});
 	} catch (error) {
 		console.error("Error saving response:", error);
+		const errorMessage = error instanceof Error ? error.message : "Unknown error";
+
+		// Check for common database errors
+		if (errorMessage.includes("relation") && errorMessage.includes("does not exist")) {
+			return NextResponse.json(
+				{ error: "Database table does not exist. Please run: npm run db:push" },
+				{ status: 500 },
+			);
+		}
+
 		return NextResponse.json(
-			{ error: "Failed to save response" },
+			{ error: `Failed to save response: ${errorMessage}` },
 			{ status: 500 },
 		);
 	}

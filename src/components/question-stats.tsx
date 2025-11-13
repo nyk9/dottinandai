@@ -17,22 +17,29 @@ export function QuestionStatsComponent({ questionId }: QuestionStatsProps) {
 		async function fetchStats() {
 			try {
 				setLoading(true);
+				console.log("Fetching stats for question:", questionId);
 				const response = await fetch(`/api/stats/${questionId}`);
+				console.log("Stats response status:", response.status);
 
 				if (response.status === 404) {
+					console.log("No stats found (404)");
 					setStats(null);
 					setError(null);
 					return;
 				}
 
 				if (!response.ok) {
-					throw new Error("統計の取得に失敗しました");
+					const errorData = await response.json().catch(() => ({}));
+					console.error("Failed to fetch stats:", response.status, errorData);
+					throw new Error(`統計の取得に失敗しました: ${errorData.error || response.statusText}`);
 				}
 
 				const data = await response.json();
+				console.log("Stats data:", data);
 				setStats(data);
 				setError(null);
 			} catch (err) {
+				console.error("Error fetching stats:", err);
 				setError(
 					err instanceof Error ? err.message : "エラーが発生しました",
 				);
