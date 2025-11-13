@@ -1,36 +1,215 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Dottin and AI - Position Selector App
+
+質問に対する意見の位置を選択し、統計データを集計・表示するアプリケーションです。
+
+## Features
+
+- 質問に対する回答を0-100のスケールで選択
+- 回答データをローカルストレージとNeon DBに保存
+- 質問ごとの統計データを可視化（平均値、中央値、分布、ヒストグラム）
+- ダークモード対応
+
+## Tech Stack
+
+- **Runtime**: Bun
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Database**: Neon DB (PostgreSQL)
+- **ORM**: Drizzle ORM
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install Dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+```
+
+### 2. Set up Neon Database
+
+1. Create a new project at [Neon Console](https://console.neon.tech)
+2. Copy your database connection string
+3. Create `.env.local` file:
+
+```bash
+cp .env.example .env.local
+```
+
+4. Edit `.env.local` and add your database URL:
+
+```
+DATABASE_URL=postgresql://user:password@host.neon.tech/dbname?sslmode=require
+```
+
+### 3. Run Database Migrations
+
+```bash
+bun run db:push
+```
+
+This will create the necessary tables in your Neon database.
+
+### 4. Start Development Server
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Database Schema
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### `responses` table
 
-## Learn More
+| Column | Type | Description |
+|--------|------|-------------|
+| id | SERIAL | Primary key |
+| question_id | VARCHAR(255) | Question identifier |
+| position_value | INTEGER | Response value (0-100) |
+| session_id | VARCHAR(255) | Optional session identifier |
+| user_agent | TEXT | User agent string |
+| created_at | TIMESTAMP | Response timestamp |
 
-To learn more about Next.js, take a look at the following resources:
+## API Endpoints
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### POST /api/responses
+Save a user response to the database.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Request Body:**
+```json
+{
+  "questionId": "string",
+  "value": number (0-100),
+  "sessionId": "string (optional)"
+}
+```
+
+### GET /api/stats
+Get overall statistics for all questions.
+
+**Response:**
+```json
+{
+  "totalResponses": number,
+  "questions": [
+    {
+      "questionId": "string",
+      "responseCount": number,
+      "average": number
+    }
+  ]
+}
+```
+
+### GET /api/stats/[questionId]
+Get detailed statistics for a specific question.
+
+**Response:**
+```json
+{
+  "questionId": "string",
+  "totalResponses": number,
+  "average": number,
+  "median": number,
+  "distribution": {
+    "0-20": number,
+    "21-40": number,
+    "41-60": number,
+    "61-80": number,
+    "81-100": number
+  },
+  "histogram": [
+    { "value": number, "count": number }
+  ]
+}
+```
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── api/
+│   │   ├── responses/      # Response save endpoint
+│   │   └── stats/          # Statistics endpoints
+│   ├── question/[id]/      # Question detail page
+│   └── page.tsx            # Home page
+├── components/
+│   ├── position-area.tsx   # Position selector UI
+│   ├── question-detail.tsx # Question detail component
+│   ├── question-stats.tsx  # Statistics visualization
+│   └── ui/                 # Reusable UI components
+├── lib/
+│   ├── db/
+│   │   ├── client.ts       # Database client
+│   │   ├── schema.ts       # Drizzle schema
+│   │   └── queries.ts      # Database queries
+│   ├── storage.ts          # LocalStorage utilities
+│   └── questions.ts        # Question data
+└── types/
+    ├── question.ts         # Question types
+    └── stats.ts            # Statistics types
+```
+
+## Scripts
+
+- `bun dev` - Start development server
+- `bun run build` - Build for production
+- `bun start` - Start production server
+- `bun run lint` - Run Biome linter
+- `bun run lint:fix` - Fix linting issues
+- `bun run format` - Format code with Biome
+- `bun run db:push` - Push database schema to Neon DB
+- `bun run db:studio` - Open Drizzle Studio to view database
+
+## Troubleshooting
+
+### Statistics not showing after submitting response
+
+1. **Check browser console for errors**
+   - Open Developer Tools (F12)
+   - Look for error messages in Console tab
+   - Check Network tab for failed API requests
+
+2. **Verify DATABASE_URL is set**
+   ```bash
+   # Make sure .env.local exists with DATABASE_URL
+   cat .env.local
+   ```
+
+3. **Verify database tables are created**
+   ```bash
+   # Push schema to database
+   bun run db:push
+   ```
+
+4. **Check if data is being saved**
+   ```bash
+   # Open Drizzle Studio to view database
+   bun run db:studio
+   ```
+
+5. **Common error messages:**
+   - "Database is not configured" → Set DATABASE_URL in .env.local
+   - "Database table does not exist" → Run `bun run db:push`
+   - "No statistics found" → Submit at least one response first
+
+### Development workflow
+
+1. Make changes to code
+2. Browser auto-reloads
+3. Test in browser
+4. Check console for errors
+5. If database errors, run `bun run db:push`
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy this app is to use the [Vercel Platform](https://vercel.com).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push your code to GitHub
+2. Import your repository in Vercel
+3. Add your `DATABASE_URL` environment variable
+4. Deploy!
+
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
