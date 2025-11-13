@@ -39,7 +39,6 @@ export function PositionArea({
 	}, []);
 
 	const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-		if (isFinalized) return;
 		e.preventDefault();
 		setIsDragging(true);
 		const newValue = calculateValueFromPosition(e.clientX);
@@ -58,7 +57,6 @@ export function PositionArea({
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-		if (isFinalized) return;
 		const currentValue = position ?? 50;
 		let newValue = currentValue;
 
@@ -104,10 +102,8 @@ export function PositionArea({
 				aria-valuemin={0}
 				aria-valuemax={100}
 				aria-valuenow={displayValue}
-				tabIndex={isFinalized ? -1 : 0}
-				className={`relative h-32 w-full rounded-lg bg-teal-50 dark:bg-teal-950 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 ${
-					isFinalized ? "cursor-not-allowed opacity-60" : "cursor-pointer"
-				}`}
+				tabIndex={0}
+				className="relative h-32 w-full rounded-lg bg-teal-50 dark:bg-teal-950 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
 				onPointerDown={handlePointerDown}
 				onPointerMove={handlePointerMove}
 				onPointerUp={handlePointerUp}
