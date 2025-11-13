@@ -1,18 +1,43 @@
-import { QuestionList } from "@/components/question-list";
+"use client";
 
-export default function HomePage() {
-  return (
-    <div className="min-h-screen py-16 px-4">
-      <div className="max-w-3xl mx-auto space-y-12">
-        <div className="space-y-4">
-          <h1 className="text-4xl font-medium text-balance">政治アンケート</h1>
-          <p className="text-muted-foreground leading-relaxed">
-            各質問をクリックして、あなたの立場を選択してください
-          </p>
-        </div>
+import { useEffect, useState } from "react";
+import { QuestionList } from "@/components/QuestionList";
+import { questions } from "@/data/questions";
+import { getResponses } from "@/lib/storage";
 
-        <QuestionList />
-      </div>
-    </div>
-  );
+export default function Home() {
+	const [responses, setResponses] = useState<Record<string, number>>({});
+	const [isLoaded, setIsLoaded] = useState(false);
+
+	useEffect(() => {
+		setResponses(getResponses());
+		setIsLoaded(true);
+	}, []);
+
+	if (!isLoaded) {
+		return (
+			<div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+				<div className="text-zinc-600 dark:text-zinc-400">読み込み中...</div>
+			</div>
+		);
+	}
+
+	return (
+		<div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-12 px-4">
+			<div className="max-w-4xl mx-auto">
+				<header className="mb-12 text-center">
+					<h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">
+						立ち位置セレクター
+					</h1>
+					<p className="text-lg text-zinc-600 dark:text-zinc-400">
+						質問に対するあなたの考えを、左右の一次元ライン上で表現してください
+					</p>
+				</header>
+
+				<main className="flex justify-center">
+					<QuestionList questions={questions} responses={responses} />
+				</main>
+			</div>
+		</div>
+	);
 }
