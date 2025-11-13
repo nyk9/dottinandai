@@ -11,6 +11,7 @@
 
 ## Tech Stack
 
+- **Runtime**: Bun
 - **Frontend**: Next.js 16, React 19, TypeScript
 - **Database**: Neon DB (PostgreSQL)
 - **ORM**: Drizzle ORM
@@ -22,7 +23,7 @@
 ### 1. Install Dependencies
 
 ```bash
-npm install
+bun install
 ```
 
 ### 2. Set up Neon Database
@@ -44,7 +45,7 @@ DATABASE_URL=postgresql://user:password@host.neon.tech/dbname?sslmode=require
 ### 3. Run Database Migrations
 
 ```bash
-npx drizzle-kit push
+bun run db:push
 ```
 
 This will create the necessary tables in your Neon database.
@@ -52,7 +53,7 @@ This will create the necessary tables in your Neon database.
 ### 4. Start Development Server
 
 ```bash
-npm run dev
+bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser.
@@ -153,14 +154,14 @@ src/
 
 ## Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run Biome linter
-- `npm run lint:fix` - Fix linting issues
-- `npm run format` - Format code with Biome
-- `npm run db:push` - Push database schema to Neon DB
-- `npm run db:studio` - Open Drizzle Studio to view database
+- `bun dev` - Start development server
+- `bun run build` - Build for production
+- `bun start` - Start production server
+- `bun run lint` - Run Biome linter
+- `bun run lint:fix` - Fix linting issues
+- `bun run format` - Format code with Biome
+- `bun run db:push` - Push database schema to Neon DB
+- `bun run db:studio` - Open Drizzle Studio to view database
 
 ## Troubleshooting
 
@@ -180,18 +181,18 @@ src/
 3. **Verify database tables are created**
    ```bash
    # Push schema to database
-   npm run db:push
+   bun run db:push
    ```
 
 4. **Check if data is being saved**
    ```bash
    # Open Drizzle Studio to view database
-   npm run db:studio
+   bun run db:studio
    ```
 
 5. **Common error messages:**
    - "Database is not configured" → Set DATABASE_URL in .env.local
-   - "Database table does not exist" → Run `npm run db:push`
+   - "Database table does not exist" → Run `bun run db:push`
    - "No statistics found" → Submit at least one response first
 
 ### Development workflow
@@ -200,7 +201,7 @@ src/
 2. Browser auto-reloads
 3. Test in browser
 4. Check console for errors
-5. If database errors, run `npm run db:push`
+5. If database errors, run `bun run db:push`
 
 ## Deploy on Vercel
 
