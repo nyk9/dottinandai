@@ -9,6 +9,19 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
+			fontFamily: {
+				sans: [
+					"system-ui",
+					"-apple-system",
+					"BlinkMacSystemFont",
+					"Segoe UI",
+					"Hiragino Sans",
+					"Hiragino Kaku Gothic ProN",
+					"Yu Gothic UI",
+					"Meiryo",
+					"sans-serif",
+				],
+			},
 			colors: {
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",
