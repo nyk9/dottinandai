@@ -6,9 +6,10 @@ import { Card } from "@/components/ui/card";
 
 interface QuestionStatsProps {
 	questionId: string;
+	refreshKey?: number;
 }
 
-export function QuestionStatsComponent({ questionId }: QuestionStatsProps) {
+export function QuestionStatsComponent({ questionId, refreshKey }: QuestionStatsProps) {
 	const [stats, setStats] = useState<QuestionStats | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -49,7 +50,7 @@ export function QuestionStatsComponent({ questionId }: QuestionStatsProps) {
 		}
 
 		fetchStats();
-	}, [questionId]);
+	}, [questionId, refreshKey]);
 
 	if (loading) {
 		return (

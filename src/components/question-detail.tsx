@@ -17,6 +17,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
   const [position, setPosition] = useState(50)
   const [mounted, setMounted] = useState(false)
   const [isFinalized, setIsFinalized] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     console.log("=== QuestionDetail mounted ===")
@@ -77,6 +78,9 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
       const result = await response.json()
       console.log("Successfully saved to database:", result)
       alert("データベースへの保存に成功しました！")
+
+      // Trigger stats refresh
+      setRefreshKey(prev => prev + 1)
     } catch (error) {
       console.error("Error saving response to database:", error)
       alert(`エラーが発生しました: ${error instanceof Error ? error.message : '不明なエラー'}`)
@@ -123,7 +127,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
 
         {isFinalized && (
           <div className="pt-8">
-            <QuestionStatsComponent questionId={question.id} />
+            <QuestionStatsComponent questionId={question.id} refreshKey={refreshKey} />
           </div>
         )}
       </div>
