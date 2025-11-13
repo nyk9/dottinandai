@@ -19,12 +19,16 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
   const [isFinalized, setIsFinalized] = useState(false)
 
   useEffect(() => {
+    console.log("=== QuestionDetail mounted ===")
+    console.log("Question:", question)
     setMounted(true)
     const savedPosition = loadResponse(question.id)
     if (savedPosition !== null) {
       setPosition(savedPosition)
     }
     setIsFinalized(isResponseFinalized(question.id))
+    console.log("Loaded position:", savedPosition)
+    console.log("Is finalized:", isResponseFinalized(question.id))
   }, [question.id])
 
   const handlePositionChange = (newPosition: number) => {
@@ -32,6 +36,12 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
   }
 
   const handleFinalize = async () => {
+    console.log("=== handleFinalize called ===")
+    console.log("Question ID:", question.id)
+    console.log("Position:", position)
+
+    alert("handleFinalize関数が呼ばれました！コンソールを確認してください。")
+
     // Save to localStorage
     saveResponse(question.id, position)
     setResponseFinalized(question.id, true)
@@ -66,6 +76,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
 
       const result = await response.json()
       console.log("Successfully saved to database:", result)
+      alert("データベースへの保存に成功しました！")
     } catch (error) {
       console.error("Error saving response to database:", error)
       alert(`エラーが発生しました: ${error instanceof Error ? error.message : '不明なエラー'}`)
