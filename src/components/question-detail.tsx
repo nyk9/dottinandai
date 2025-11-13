@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { PositionArea } from "@/components/position-area"
+import { QuestionStatsComponent } from "@/components/question-stats"
 import type { Question } from "@/lib/questions"
 import { saveResponse, loadResponse, isResponseFinalized, setResponseFinalized } from "@/lib/storage"
 import { ArrowLeftIcon } from "@radix-ui/react-icons"
@@ -94,6 +95,12 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
           isFinalized={isFinalized}
           onFinalize={handleFinalize}
         />
+
+        {isFinalized && (
+          <div className="pt-8">
+            <QuestionStatsComponent questionId={question.id} />
+          </div>
+        )}
       </div>
     </div>
   )
