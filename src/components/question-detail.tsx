@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { PositionArea } from "@/components/position-area"
+import { PositionArea } from "@/components/PositionArea"
 import { QuestionStatsComponent } from "@/components/question-stats"
-import type { Question } from "@/lib/questions"
+import type { Question } from "@/types/question"
 import { saveResponse, loadResponse, isResponseFinalized, setResponseFinalized } from "@/lib/storage"
 import { ArrowLeftIcon } from "@radix-ui/react-icons"
 
@@ -14,7 +14,7 @@ interface QuestionDetailProps {
 }
 
 export function QuestionDetail({ question }: QuestionDetailProps) {
-  const [position, setPosition] = useState(50)
+  const [value, setValue] = useState<number | null>(50)
   const [mounted, setMounted] = useState(false)
   const [isFinalized, setIsFinalized] = useState(false)
 
@@ -22,28 +22,33 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
     console.log("=== QuestionDetail mounted ===")
     console.log("Question:", question)
     setMounted(true)
-    const savedPosition = loadResponse(question.id)
-    if (savedPosition !== null) {
-      setPosition(savedPosition)
+    const savedValue = loadResponse(question.id)
+    if (savedValue !== null) {
+      setValue(savedValue)
     }
     setIsFinalized(isResponseFinalized(question.id))
-    console.log("Loaded position:", savedPosition)
+    console.log("Loaded value:", savedValue)
     console.log("Is finalized:", isResponseFinalized(question.id))
   }, [question.id])
 
-  const handlePositionChange = (newPosition: number) => {
-    setPosition(newPosition)
+  const handlePositionChange = (newValue: number) => {
+    setValue(newValue)
   }
 
   const handleFinalize = async () => {
     console.log("=== handleFinalize called ===")
     console.log("Question ID:", question.id)
-    console.log("Position:", position)
+    console.log("Value:", value)
 
     alert("handleFinalize関数が呼ばれました！コンソールを確認してください。")
 
+    if (value === null) {
+      alert("値を選択してください。")
+      return
+    }
+
     // Save to localStorage
-    saveResponse(question.id, position)
+    saveResponse(question.id, value)
     setResponseFinalized(question.id, true)
     setIsFinalized(true)
 
@@ -51,7 +56,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
     try {
       console.log("Sending POST request to /api/responses", {
         questionId: question.id,
-        value: position,
+        value: value,
       })
 
       const response = await fetch("/api/responses", {
@@ -61,7 +66,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
         },
         body: JSON.stringify({
           questionId: question.id,
-          value: position,
+          value: value,
         }),
       })
 
@@ -93,7 +98,7 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
           </Button>
         </Link>
         <div className="space-y-12">
-          <h1 className="text-3xl font-medium leading-relaxed text-balance">{question.text}</h1>
+          <h1 className="text-3xl font-medium leading-relaxed text-balance">{question.title}</h1>
           <div className="h-48" />
         </div>
       </div>
@@ -110,16 +115,22 @@ export function QuestionDetail({ question }: QuestionDetailProps) {
       </Link>
 
       <div className="space-y-12">
-        <h1 className="text-3xl font-medium leading-relaxed text-balance">{question.text}</h1>
+        <h1 className="text-3xl font-medium leading-relaxed text-balance">{question.title}</h1>
 
         <PositionArea
-          position={position}
+          value={value}
           onChange={handlePositionChange}
-          leftLabel={question.leftLabel}
-          rightLabel={question.rightLabel}
-          isFinalized={isFinalized}
-          onFinalize={handleFinalize}
+          leftLabel={question.left}
+          rightLabel={question.right}
         />
+
+        {!isFinalized && (
+          <div className="flex justify-center">
+            <Button onClick={handleFinalize}>
+              回答を確定する
+            </Button>
+          </div>
+        )}
 
         {isFinalized && (
           <div className="pt-8">
