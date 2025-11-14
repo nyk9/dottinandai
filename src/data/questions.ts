@@ -8,15 +8,21 @@ export const questions: Question[] = [
 		right: "ナシ",
 	},
 	{
-		id: "casual-speech-question",
-		title: "初対面でタメ口はアリ？ナシ？",
+		id: "appearance-compliment-question",
+		title: "「〇〇社には美人/イケメンが多いですね」って聞くのはアリ？ナシ？",
 		left: "アリ",
 		right: "ナシ",
 	},
 	{
-		id: "small-talk-boss-question",
-		title: "上司への雑談は必要？不要？",
-		left: "必要",
-		right: "不要",
+		id: "marriage-children-question",
+		title: "「結婚してますか？/ 子供はいますか？」って聞くのはアリ？ナシ？",
+		left: "アリ",
+		right: "ナシ",
+	},
+	{
+		id: "giants-tigers-question",
+		title: "「巨人/ 阪神」？",
+		left: "巨人",
+		right: "阪神",
 	},
 ];
