@@ -126,12 +126,6 @@ export function PositionArea({
 				/>
 			</div>
 
-			{/* 操作説明 */}
-			<p className="text-xs text-zinc-500 dark:text-zinc-400 text-center">
-				クリックまたはドラッグで位置を決めてください（キーボード: ← →
-				キー、Shift+矢印で10ずつ移動）
-			</p>
-
 			{/* 現在値表示 */}
 			<div className="text-center">
 				<p className="text-sm text-zinc-600 dark:text-zinc-400">
